@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 
 const Chatbot = () => {
   const [isChatbotVisible, setIsChatbotVisible] = useState(false);
   const [inputText, setInputText] = useState('');
   const [messages, setMessages] = useState([]);
+  const inputRef = useRef(null);
 
   const toggleChatbot = () => {
     setIsChatbotVisible(!isChatbotVisible);
@@ -16,8 +17,20 @@ const Chatbot = () => {
 
   const handleSendMessage = () => {
     if (inputText) {
-      setMessages([...messages, { text: inputText, isUser: true }]);
+      // setMessages([...messages, { text: inputText, isUser: true }]);
+      // setInputText('');
+      const newMessage = { text: inputText, isUser: true };
+
+      // Unshift the new message to the beginning of the messages array
+      setMessages((prevMessages) => [newMessage, ...prevMessages]);
+
       setInputText('');
+    }
+  };
+
+  const handleEnterPress = (event) => {
+    if (event.key === 'Enter') {
+      handleSendMessage();
     }
   };
 
@@ -47,12 +60,15 @@ const Chatbot = () => {
               </MessagesItem>
             ))}
           </ChatboxMessages>
+
           <ChatboxFooter>
             <input
               type="text"
               placeholder="Write a message..."
               value={inputText}
               onChange={handleInputTextChange}
+              onKeyDown={handleEnterPress}
+              ref={inputRef}
             />
             <button className="send_button" onClick={handleSendMessage}>
               Send
